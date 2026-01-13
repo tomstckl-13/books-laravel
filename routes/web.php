@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthorController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TokenController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', fn() => view('welcome'));
@@ -71,4 +72,15 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.delete');
 });
 
+Route::middleware('auth')->group(function(){
+    Route::controller(TokenController::class)->group(function(){
+
+        Route::get('/tokens', 'index')->name('token.list');
+
+        Route::post('/tokens', 'store')->name('token.store');
+
+        Route::delete('/tokens/{token}', 'destroy')->name('token.destroy');
+    });
+
+});
 require __DIR__ . '/auth.php';

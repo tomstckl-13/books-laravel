@@ -11,6 +11,11 @@ class BookController extends Controller
 {
     public function destroyBook(Book $book)
     {
+
+        if (! Gate::allows('update-book', $book))
+        {
+            abort(403);
+        }
         $book->delete();
 
         return back()->with('success', 'The book has been deleted.');
@@ -18,6 +23,11 @@ class BookController extends Controller
 
     public function editBook(Book $book)
     {
+        if (! Gate::allows('update-book', $book))
+        {
+            abort(403);
+        }
+
         $authors = Author::all();
         return view('books.edit', [
             'book' => $book,
@@ -69,7 +79,8 @@ class BookController extends Controller
     public function listBooks(): View
     {
         //$books = Book::all();
-        $books = Book::with('author')->get();
+        //$books = Book::with('author')->get();
+        $books = auth()->user()->books;
 
         return view('list', [
             'books' => $books
