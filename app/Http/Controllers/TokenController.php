@@ -14,7 +14,7 @@ class TokenController extends Controller
         $tokens = auth()->user()->tokens()
             ->paginate(5);
         return view('tokens.list',[
-
+            'tokens' => $tokens,
         ]);
     }
 
@@ -31,7 +31,18 @@ class TokenController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $attributes = $request->validate([
+           'title' => 'required|min:3|max:255'
+        ]);
+
+        $token = auth()->user()->createToken($attributes['title']);
+
+        return back()->with([
+           'success' => __('Your token has been created'),
+           'token' => $token->plainTextToken,
+        ]);
+
+
     }
 
     /**
@@ -61,8 +72,10 @@ class TokenController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($token)
     {
-        //
+       auth()->user()->tokens()->where('id', $token)->delete();
+
+       return back()->with('success', __('Token has been revoked'));
     }
 }

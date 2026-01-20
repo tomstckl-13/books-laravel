@@ -16,17 +16,17 @@
                         Add Token
                     </h2>
 
-                    <form method="POST" action="{{ route('authors.store') }}" class="space-y-6">
+                    <form method="POST" action="{{ route('token.store') }}" class="space-y-6">
                         @csrf
 
                         {{-- NAME --}}
                         <div class="space-y-1">
                             <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Token Name</label>
-                            <input name="name" value="{{ old('name') }}" class="block w-full rounded-xl border-gray-300 dark:border-gray-700
+                            <input name="title" value="{{ old('title') }}" class="block w-full rounded-xl border-gray-300 dark:border-gray-700
                                        bg-white/60 dark:bg-gray-900/50
                                        text-gray-900 dark:text-gray-100
                                        focus:border-indigo-500 focus:ring-indigo-500 transition">
-                            @error('name')
+                            @error('title')
                             <p class="text-sm text-red-500">{{ $message }}</p>
                             @enderror
                         </div>
@@ -43,8 +43,27 @@
             </div>
         </div>
 
+
+
         {{-- AUTHORS LIST --}}
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            @if(session('success'))
+                <div class="bg-indigo-50 border-rounded-lg p-4 text-indigo-700 mb-3">
+                    <p>
+                        {{session('success')}}
+                    </p>
+
+                        @if(session()->has('token'))
+                            <p>
+                                Your Token: {{session('token')}}
+                            </p>
+                        @endif
+
+                </div>
+            @endif
+            <div>
+
+            </div>
             <div class="bg-white dark:bg-gray-900/60 backdrop-blur
                         rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm">
                 <div class="p-6 md:p-8 space-y-8">
@@ -75,64 +94,36 @@
                             Tokens
                         </h2>
                         <div>
-                            
+
                         </div>
                         <span class="text-sm text-gray-500 dark:text-gray-400">
                             {{--// Anzahl der tokens--}}
                         </span>
                     </div>
 
-                    <div class="space-y-3">
-                        {{--
-                        @forelse ($authors as $author)
-                            <div class="group relative overflow-hidden rounded-xl
-                                            bg-white/50 dark:bg-gray-900/40
-                                            transition-all duration-300
-                                            hover:shadow-md hover:-translate-y-0.5
-                                            hover:bg-gray-50 dark:hover:bg-gray-800/70">
+                    <div class="space-y-3 text-white">
+                        @foreach($tokens as $token)
+                            <div class="flex flex-row justify-between border-2 border-white p-4 ">
+                                <h1>
+                                    {{$token->name}}
+                                </h1>
 
-                                <div class="flex items-center gap-4 px-4 py-3 pr-14">
-                                    <div class="flex-1 space-y-0.5">
-                                        <p
-                                            class="font-bold text-gray-900 dark:text-gray-100
-                                                      group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                                            {{ $author->name }}
-                                        </p>
-                                        <p class="text-xs text-gray-500 tracking-wide">
-                                            {{ $author->email }}
-                                        </p>
-                                    </div>
-                                </div>
-
-
-                                <div class="absolute inset-y-0 right-0 flex items-center gap-2
-                                                translate-x-full group-hover:translate-x-0
-                                                transition-all duration-300 ease-out pr-3">
-
-                                    <a href="{{ route('authors.edit', $author) }}" class="w-9 h-9 flex items-center justify-center rounded-lg
-                                                  text-indigo-400 hover:text-indigo-600
-                                                  hover:bg-indigo-500/10 dark:hover:text-indigo-300 transition">
-                                        <x-pencil class="w-5 h-5" />
-                                    </a>
-
-                                    <form method="POST" action="{{ route('authors.delete', $author) }}">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="w-9 h-9 flex items-center justify-center rounded-lg
-                                                       bg-red-500/10 text-red-500
-                                                       hover:bg-red-500 hover:text-white transition">
-                                            <x-trash class="w-5 h-5" />
-                                        </button>
-                                    </form>
-                                </div>
+                                <form method="POST" action="{{route('token.destroy', $token->id)}}">
+                                    @method('DELETE')
+                                    @csrf
+                                    <x-primary-button>
+                                        Delete
+                                    </x-primary-button>
+                                </form>
                             </div>
-                        @empty
-                            <p class="text-center text-gray-500 dark:text-gray-400">
-                                No authors found.
-                            </p>
-                        @endforelse
-                    --}}
+
+                        @endforeach
+                            <div>
+                                {{$tokens->links()}}
+                            </div>
                     </div>
+
+
 
                 </div>
             </div>
