@@ -74,6 +74,9 @@
                         <h2 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
                             Tokens
                         </h2>
+                        <div>
+                            
+                        </div>
                         <span class="text-sm text-gray-500 dark:text-gray-400">
                             {{--// Anzahl der tokens--}}
                         </span>

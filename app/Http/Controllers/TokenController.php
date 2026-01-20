@@ -11,6 +11,8 @@ class TokenController extends Controller
      */
     public function index()
     {
+        $tokens = auth()->user()->tokens()
+            ->paginate(5);
         return view('tokens.list',[
 
         ]);
