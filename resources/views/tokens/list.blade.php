@@ -1,133 +1,113 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="text-xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-            Tokens
+        <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
+            {{ __('Tokens') }}
         </h2>
     </x-slot>
 
-    <div class="py-10 space-y-12">
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-        {{-- ADD AUTHOR --}}
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="bg-white dark:bg-gray-900/60 backdrop-blur
-                        rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm">
-                <div class="p-6 md:p-8 space-y-8">
-                    <h2 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-                        Add Token
-                    </h2>
-
-                    <form method="POST" action="{{ route('token.store') }}" class="space-y-6">
-                        @csrf
-
-                        {{-- NAME --}}
-                        <div class="space-y-1">
-                            <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Token Name</label>
-                            <input name="title" value="{{ old('title') }}" class="block w-full rounded-xl border-gray-300 dark:border-gray-700
-                                       bg-white/60 dark:bg-gray-900/50
-                                       text-gray-900 dark:text-gray-100
-                                       focus:border-indigo-500 focus:ring-indigo-500 transition">
-                            @error('title')
-                            <p class="text-sm text-red-500">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-
-
-                        <x-primary-button class="w-full justify-center py-3 text-base
-                                   transition-all duration-200
-                                   hover:-translate-y-0.5 hover:shadow-md">
-                            Save Token
-                        </x-primary-button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
-
-
-        {{-- AUTHORS LIST --}}
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            @if(session('success'))
-                <div class="bg-indigo-50 border-rounded-lg p-4 text-indigo-700 mb-3">
-                    <p>
-                        {{session('success')}}
-                    </p>
-
-                        @if(session()->has('token'))
-                            <p>
-                                Your Token: {{session('token')}}
-                            </p>
-                        @endif
-
+            {{-- Erfolgsmeldung und Token-Anzeige --}}
+            @if (session('success'))
+                <div class="bg-indigo-50 border rounded-lg border-indigo-200 p-4 text-sm text-indigo-700 mb-3">
+                    <p>{{ session('success') }}</p>
+                    @if (session()->has('token'))
+                        <p class="mt-2 font-mono font-bold bg-white p-2 rounded border border-indigo-100">
+                            {{ __('Your token: :token', ['token' => session('token')]) }}
+                        </p>
+                    @endif
                 </div>
             @endif
-            <div>
 
+            {{-- Token erstellen Formular --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <form method="POST" action="{{ route('token.store') }}" class="bg-white border border-slate-200 rounded-lg p-6 space-y-5">
+                    @csrf
+
+                    <div>
+                        <label for="title" class="block text-sm font-medium text-slate-700">{{ __('Title') }}</label>
+                        <input id="title" name="title" type="text" required value="{{ old('title') }}"
+                               class="mt-1 block w-full rounded-md border-slate-300 text-slate-900 focus:border-indigo-500 focus:ring-indigo-500" />
+                        @error('title')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    {{-- Abilities / Berechtigungen --}}
+                    <div>
+                        <label class="block text-sm font-medium text-slate-700 mb-2">
+                            {{ __('Abilities') }}
+                        </label>
+
+                        @error('abilities')
+                        <p class="mb-2 text-sm text-red-600">{{ $message }}</p>
+                        @enderror
+
+                        <div class="space-y-3">
+                            @php
+                                $availableAbilities = [
+                                    'bookmark:list' => 'List bookmarks',
+                                    'bookmark:create' => 'Create bookmarks',
+                                    'bookmark:edit' => 'Edit bookmarks',
+                                    'bookmark:delete' => 'Delete bookmarks',
+                                ];
+                            @endphp
+
+                            @foreach($availableAbilities as $value => $label)
+                                <label class="flex items-center space-x-3">
+                                    <input type="checkbox" name="abilities[]" value="{{ $value }}"
+                                           @checked(is_array(old('abilities')) && in_array($value, old('abilities')))
+                                           class="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500" />
+                                    <span class="text-sm text-slate-700">{{ __($label) }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end">
+                        <x-primary-button>
+                            {{ __('Create token') }}
+                        </x-primary-button>
+                    </div>
+                </form>
             </div>
-            <div class="bg-white dark:bg-gray-900/60 backdrop-blur
-                        rounded-2xl border border-gray-200/60 dark:border-gray-700/60 shadow-sm">
-                <div class="p-6 md:p-8 space-y-8">
 
-                    {{-- FLASH MESSAGES --}}
-                    @if (session('success'))
-                        <div class="flex items-center gap-3 rounded-xl
-                                        bg-lime-50/80 dark:bg-lime-900/20 px-4 py-3">
-                            <div class="w-2 h-2 rounded-full bg-lime-500"></div>
-                            <p class="text-lime-700 dark:text-lime-400 font-medium">
-                                {{ session('success') }}
-                            </p>
-                        </div>
-                    @endif
-
-                    @if (session('error'))
-                        <div class="flex items-center gap-3 rounded-xl
-                                        bg-red-50/80 dark:bg-red-900/20 px-4 py-3">
-                            <div class="w-2 h-2 rounded-full bg-red-500"></div>
-                            <p class="text-red-700 dark:text-red-400 font-medium">
-                                {{ session('error') }}
-                            </p>
-                        </div>
-                    @endif
-
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-2xl font-semibold tracking-tight text-gray-900 dark:text-gray-100">
-                            Tokens
-                        </h2>
-                        <div>
-
-                        </div>
-                        <span class="text-sm text-gray-500 dark:text-gray-400">
-                            {{--// Anzahl der tokens--}}
-                        </span>
-                    </div>
-
-                    <div class="space-y-3 text-white">
-                        @foreach($tokens as $token)
-                            <div class="flex flex-row justify-between border-2 border-white p-4 ">
-                                <h1>
-                                    {{$token->name}}
-                                </h1>
-
-                                <form method="POST" action="{{route('token.destroy', $token->id)}}">
-                                    @method('DELETE')
-                                    @csrf
-                                    <x-primary-button>
-                                        Delete
-                                    </x-primary-button>
-                                </form>
+            {{-- Token Liste --}}
+            <div class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm sm:rounded-lg">
+                <div class="p-6 text-gray-900 dark:text-gray-100 space-y-3">
+                    @if($tokens->isEmpty())
+                        <p>{{ __('Please add a token.') }}</p>
+                    @else
+                        @foreach ($tokens as $token)
+                            <div class="bg-white border border-slate-200 rounded-lg p-5 flex flex-col md:flex-row justify-between items-center">
+                                <div>
+                                    <h2 class="text-lg font-semibold text-indigo-600 leading-tight">
+                                        {{ $token->name }}
+                                    </h2>
+                                </div>
+                                <div class="flex flex-row space-x-3 mt-3 md:mt-0">
+                                    <form action="{{ route('token.destroy', $token) }}" method="post" onsubmit="return confirm('Wirklich löschen?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-600 hover:text-red-800">
+                                            <x-trash />
+                                            <span class="sr-only">{{ __('Remove token') }}</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-
                         @endforeach
-                            <div>
-                                {{$tokens->links()}}
-                            </div>
-                    </div>
-
-
-
+                    @endif
                 </div>
+
+                {{-- Pagination --}}
+                @if($tokens->hasPages())
+                    <div class="p-6 border-t border-gray-100">
+                        {{ $tokens->links() }}
+                    </div>
+                @endif
             </div>
         </div>
-
     </div>
 </x-app-layout>

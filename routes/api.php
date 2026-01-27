@@ -1,8 +1,9 @@
 <?php
 
+use App\Http\Controllers\RestController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
+Route::delete('books/{book}', [RestController::class, 'destroy']
+)->middleware(['abilities:bookmark:delete'])
+    ->name('rest.destroy');

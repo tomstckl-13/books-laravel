@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class TokenController extends Controller
 {
@@ -32,10 +33,13 @@ class TokenController extends Controller
     public function store(Request $request)
     {
         $attributes = $request->validate([
-           'title' => 'required|min:3|max:255'
+           'title' => 'required|min:3|max:255',
+            'abilities' => ['required', 'array', Rule::in(['bookmark:list', 'bookmark:edit',
+                'bookmark:edit', 'bookmark:create', 'bookmark:delete'])]
         ]);
 
-        $token = auth()->user()->createToken($attributes['title']);
+        $token = auth()->user()->createToken($attributes['title'],
+        $attributes['abilities']);
 
         return back()->with([
            'success' => __('Your token has been created'),
